@@ -1,0 +1,10 @@
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\bin\Debug\Pop-UP.exe.config
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\bin\Debug\Pop-UP.exe
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\bin\Debug\Pop-UP.pdb
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\obj\Debug\Pop-UP.csproj.AssemblyReference.cache
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\obj\Debug\Pop-UP.csproj.SuggestedBindingRedirects.cache
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\obj\Debug\Pop_UP.Properties.Resources.resources
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\obj\Debug\Pop-UP.csproj.GenerateResource.cache
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\obj\Debug\Pop-UP.csproj.CoreCompileInputs.cache
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\obj\Debug\Pop-UP.exe
+C:\Users\LarsLivyns\source\repos\Pop-UP\Pop-UP\obj\Debug\Pop-UP.pdb
