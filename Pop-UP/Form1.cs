@@ -39,6 +39,14 @@ namespace Pop_UP
             Controls.Add(pb_main);
             pb_main.Controls.Add(lbl_titel);
             pb_main.Controls.Add(btn_start);
+
+            //kleine test
+            btn_start.Click += (sender, e) =>
+            {
+                puzzel_connect puzzel_connect = new puzzel_connect("testje");
+                //tonen
+                puzzel_connect.ShowDialog();
+            };
         }
     }
 }
