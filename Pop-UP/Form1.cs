@@ -40,7 +40,7 @@ namespace Pop_UP
             pb_main.Controls.Add(lbl_titel);
             pb_main.Controls.Add(btn_start);
 
-            //kleine test
+            //kleine test  
             btn_start.Click += (sender, e) =>
             {
                 puzzel_connect puzzel_connect = new puzzel_connect("testje");
