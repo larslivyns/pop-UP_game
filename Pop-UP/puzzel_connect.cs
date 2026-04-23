@@ -14,16 +14,19 @@ namespace Pop_UP
         Random rnd = new Random();
         private Dictionary<Color, bool> verbonden = new Dictionary<Color, bool>();
         private int aantalKleuren;
+        public Label lbl = new Label();
 
         private PictureBox startPb = null;
         private bool isMoving = false;
         private Color pbKleur;
         private List<PictureBox> pad = new List<PictureBox>();
 
-        public puzzel_connect(string naam)
+        public puzzel_connect(string naam, Label lbl)
         {
             this.Size = new Size(266, 290);
             this.MouseUp += Grid_MouseUp;
+
+            this.lbl = lbl;
 
             //rnd een aantal vakjes vulln me kleurkes
             Dictionary<int, Color> gekleurdeVakjes = new Dictionary<int, Color>();
@@ -31,7 +34,7 @@ namespace Pop_UP
             gekleurdeVakjes.Add(Color.Blue, rnd.Next(0, 25));
             gekleurdeVakjes.Add(Color.Yellow, rnd.Next(0, 25));*/
             //ff checken
-            Color[] kleuren = { Color.Red, Color.Blue, Color.Red, Color.Blue };
+            Color[] kleuren = { Color.Red, Color.Blue, Color.Green, Color.Red, Color.Blue, Color.Green };
             aantalKleuren = kleuren.Distinct().Count();
             List<int> gebruikteVakjes = new List<int>();
             // Vervang de huidige loop in de constructor door dit:
@@ -41,7 +44,7 @@ namespace Pop_UP
                 gekleurdeVakjes.Clear();
                 gebruikteVakjes.Clear();
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     int randomVakje;
                     do { randomVakje = rnd.Next(0, 25); }
@@ -53,11 +56,13 @@ namespace Pop_UP
                 // Check of rood->rood en blauw->blauw een pad hebben
                 var roodVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Red).Select(k => k.Key).ToList();
                 var blauwVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Blue).Select(k => k.Key).ToList();
+                var groenVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Green).Select(k => k.Key).ToList();
 
                 bool roodOk = HeeftPad(roodVakjes[0], roodVakjes[1], gekleurdeVakjes);
                 bool blauwOk = HeeftPad(blauwVakjes[0], blauwVakjes[1], gekleurdeVakjes);
+                bool groenOk = HeeftPad(groenVakjes[0], groenVakjes[1], gekleurdeVakjes);
 
-                geldigBord = roodOk && blauwOk;
+                geldigBord = roodOk && blauwOk && groenOk;
             }
             //speelveld opzettn
             for (int i = 0; i < 25; i++)
@@ -189,7 +194,11 @@ namespace Pop_UP
         private void CheckWin()
         {
             if (verbonden.Count == aantalKleuren && verbonden.Values.All(v => v))
+            {
                 MessageBox.Show("Gewonnen! 🎉");
+                Form1.totalMs += 1500;
+                this.Close();
+            } 
         }
     }
 }

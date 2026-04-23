@@ -14,6 +14,9 @@ namespace Pop_UP
     {
         int pb_width = 600;
         int pb_height = 600;
+        Timer timer = new Timer();
+        public static int totalMs = 10 * 1000;
+        public Label lbl_titel = new Label();
         public Form1()
         {
             InitializeComponent();
@@ -22,8 +25,7 @@ namespace Pop_UP
             //eerst het startscherm
             PictureBox pb_main = new PictureBox();
             pb_main.Size = new Size(pb_width, pb_height);
-            
-            Label lbl_titel = new Label();
+           
             lbl_titel.Location = new Point(pb_width / 2 - 100, pb_height / 2 - 90);
             lbl_titel.Size = new Size(200, 60);
             lbl_titel.Text = "POP-UP";
@@ -43,10 +45,28 @@ namespace Pop_UP
             //kleine test  
             btn_start.Click += (sender, e) =>
             {
-                puzzel_connect puzzel_connect = new puzzel_connect("testje");
-                //tonen
+                puzzel_connect puzzel_connect = new puzzel_connect("testje", lbl_titel);
                 puzzel_connect.ShowDialog();
+                // timer.Start(); <- dit weghalen
+                btn_start.Text = "Volgende Puzzel";
             };
+
+            
+            lbl_titel.Text = "10:000";
+            timer.Interval = 1;
+            timer.Tick += (sender2, e2) =>
+            {
+                totalMs--;
+                int seconden = totalMs / 1000;
+                int ms = totalMs % 1000;
+                lbl_titel.Text = $"{seconden:D2}:{ms:D3}";
+                if (totalMs <= 0)
+                {
+                    timer.Stop();
+                    lbl_titel.Text = "00:000";
+                }
+            };
+            timer.Start();
         }
     }
 }
