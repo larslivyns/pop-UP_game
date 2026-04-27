@@ -17,6 +17,8 @@ namespace Pop_UP
         Timer timer = new Timer();
         public static int totalMs = 10 * 1000;
         public Label lbl_titel = new Label();
+        Random rnd = new Random();
+        bool game_started = false;
         public Form1()
         {
             InitializeComponent();
@@ -45,17 +47,20 @@ namespace Pop_UP
             //kleine test  
             btn_start.Click += (sender, e) =>
             {
+                game_started = true;
                 puzzel_connect puzzel_connect = new puzzel_connect("testje", lbl_titel);
                 puzzel_connect.ShowDialog();
-                // timer.Start(); <- dit weghalen
+                timer.Start();
                 btn_start.Text = "Volgende Puzzel";
             };
 
             
             lbl_titel.Text = "10:000";
             timer.Interval = 1;
+            List<pop_up1> pop_ups = new List<pop_up1>();
             timer.Tick += (sender2, e2) =>
             {
+                
                 totalMs--;
                 int seconden = totalMs / 1000;
                 int ms = totalMs % 1000;
@@ -65,8 +70,15 @@ namespace Pop_UP
                     timer.Stop();
                     lbl_titel.Text = "00:000";
                 }
+                int add = rnd.Next(0, 300);
+                if (add == 1 && game_started && pop_ups.Count < 5)
+                {
+                    pop_up1 pop_Up1 = new pop_up1();
+                    pop_Up1.ShowDialog();
+                    pop_ups.Add(pop_Up1);
+                }
             };
-            timer.Start();
+            //timer.Start();
         }
     }
 }
