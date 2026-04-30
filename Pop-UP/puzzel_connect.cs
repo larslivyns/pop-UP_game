@@ -54,6 +54,7 @@ namespace Pop_UP
                 }
 
                 // Check of rood->rood en blauw->blauw een pad hebben
+                //puzzel zeg maar al oplossen voor getoond word -> puzzel oplosbaar
                 var roodVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Red).Select(k => k.Key).ToList();
                 var blauwVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Blue).Select(k => k.Key).ToList();
                 var groenVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Green).Select(k => k.Key).ToList();

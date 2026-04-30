@@ -48,9 +48,19 @@ namespace Pop_UP
             btn_start.Click += (sender, e) =>
             {
                 game_started = true;
-                puzzel_connect puzzel_connect = new puzzel_connect("testje", lbl_titel);
-                puzzel_connect.ShowDialog();
                 timer.Start();
+                int welke_puzzel = rnd.Next(0, 100);
+                if(welke_puzzel < 50)
+                {
+                    puzzel_connect puzzel_connect = new puzzel_connect("testje", lbl_titel);
+                    puzzel_connect.ShowDialog();
+                }
+                else
+                {
+                    download download = new download();
+                    download.ShowDialog();
+                }
+
                 btn_start.Text = "Volgende Puzzel";
             };
 
@@ -70,8 +80,8 @@ namespace Pop_UP
                     timer.Stop();
                     lbl_titel.Text = "00:000";
                 }
-                int add = rnd.Next(0, 300);
-                if (add == 1 && game_started && pop_ups.Count < 5)
+                int pop_up_show = rnd.Next(0, 200);
+                if (pop_up_show == 1 && game_started && pop_ups.Count < 5)
                 {
                     pop_up1 pop_Up1 = new pop_up1();
                     pop_Up1.ShowDialog();
