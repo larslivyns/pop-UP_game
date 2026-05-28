@@ -13,6 +13,7 @@ namespace Pop_UP
         public string naam;
         Random rnd = new Random();
         private Dictionary<Color, bool> verbonden = new Dictionary<Color, bool>();
+        private Dictionary<Color, List<PictureBox>> allePaden = new Dictionary<Color, List<PictureBox>>();
         private int aantalKleuren;
         public Label lbl = new Label();
 
@@ -59,11 +60,7 @@ namespace Pop_UP
                 var blauwVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Blue).Select(k => k.Key).ToList();
                 var groenVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Green).Select(k => k.Key).ToList();
 
-                bool roodOk = HeeftPad(roodVakjes[0], roodVakjes[1], gekleurdeVakjes);
-                bool blauwOk = HeeftPad(blauwVakjes[0], blauwVakjes[1], gekleurdeVakjes);
-                bool groenOk = HeeftPad(groenVakjes[0], groenVakjes[1], gekleurdeVakjes);
-
-                geldigBord = roodOk && blauwOk && groenOk;
+                geldigBord = IsPuzzelOplosbaar(gekleurdeVakjes);
             }
             //speelveld opzettn
             for (int i = 0; i < 25; i++)
@@ -77,8 +74,9 @@ namespace Pop_UP
                 {
                     if (i == vakje)
                     {
-                        Console.WriteLine(vakje); //nummers
+                        Console.WriteLine(vakje);
                         grid_pb.BackColor = gekleurdeVakjes[vakje];
+                        grid_pb.Tag = "eindpunt";   
                     }
                 }
                 grid_pb.MouseDown += Grid_MouseDown;
@@ -87,7 +85,7 @@ namespace Pop_UP
                 Controls.Add(grid_pb);
             }
         }
-        private bool HeeftPad(int start, int eind, Dictionary<int, Color> geblokkeerd)
+        /*private bool HeeftPad(int start, int eind, Dictionary<int, Color> geblokkeerd)
         {
             Color startKleur = geblokkeerd[start];
             Queue<int> queue = new Queue<int>();
@@ -120,18 +118,33 @@ namespace Pop_UP
                 }
             }
             return false;
-        }
+        }*/
         //start en end point moetn hetzelfde zn -> YAY
         private void Grid_MouseDown(object sender, MouseEventArgs e)
         {
             PictureBox geklikt = (PictureBox)sender;
             if (geklikt.BackColor == Color.LightGray) return;
-            startPb = geklikt;
-            pbKleur = geklikt.BackColor;
-            isMoving = true;
-            verbonden[pbKleur] = false; // reset
-            pad.Clear();
-            pad.Add(geklikt);
+
+            Color kleur = geklikt.BackColor;
+
+            // Klik op een vakje van een bestaand pad -> wis heel dat pad
+            if (allePaden.ContainsKey(kleur))
+            {
+                foreach (PictureBox pb in allePaden[kleur])
+                    if (pb.Tag == null) pb.BackColor = Color.LightGray;
+                allePaden.Remove(kleur);
+                verbonden[kleur] = false;
+            }
+
+            // Start nieuw pad vanaf eindpunt
+            if (geklikt.Tag != null)
+            {
+                startPb = geklikt;
+                pbKleur = kleur;
+                isMoving = true;
+                pad.Clear();
+                pad.Add(geklikt);
+            }
         }
         private void Grid_MouseEnter(object sender, EventArgs e)
         {
@@ -153,6 +166,7 @@ namespace Pop_UP
             if (hovered.BackColor == pbKleur && hovered != startPb)
             {
                 pad.Add(hovered);
+                allePaden[pbKleur] = new List<PictureBox>(pad); // NIEUW: pad opslaan
                 isMoving = false;
                 verbonden[pbKleur] = true;
                 CheckWin();
@@ -172,7 +186,6 @@ namespace Pop_UP
                 isMoving = false;
             }
         }
-
         private void Grid_MouseUp(object sender, MouseEventArgs e)
         {
             if (!isMoving && pad.Count > 0 && pad.Last().BackColor == pbKleur)
@@ -191,6 +204,62 @@ namespace Pop_UP
             startPb = null;
             isMoving = false;
             pad.Clear();
+        }
+        private bool IsPuzzelOplosbaar(Dictionary<int, Color> gekleurdeVakjes)
+        {
+            // Bouw per kleur de twee eindpunten op
+            var kleurParen = gekleurdeVakjes
+                .GroupBy(k => k.Value)
+                .ToDictionary(g => g.Key, g => g.Select(k => k.Key).ToList());
+
+            // Grid status: -1 = leeg, anders = bezet door kleur (als index)
+            int[] grid = new int[25];
+            for (int i = 0; i < 25; i++) grid[i] = -1;
+
+            // Zet de eindpunten vast
+            foreach (var kv in gekleurdeVakjes)
+                grid[kv.Key] = kv.Value.ToArgb();
+
+            var kleuren = kleurParen.Keys.ToList();
+            return Backtrack(grid, kleurParen, kleuren, 0);
+        }
+        private bool Backtrack(int[] grid, Dictionary<Color, List<int>> kleurParen, List<Color> kleuren, int kleurIndex)
+        {
+            if (kleurIndex == kleuren.Count) return true; // alle kleuren verbonden
+
+            Color kleur = kleuren[kleurIndex];
+            int start = kleurParen[kleur][0];
+            int eind = kleurParen[kleur][1];
+
+            return ZoekPad(grid, start, eind, kleur.ToArgb(), kleurParen, kleuren, kleurIndex);
+        }
+        private bool ZoekPad(int[] grid, int huidig, int eind, int kleurArgb,Dictionary<Color, List<int>> kleurParen, List<Color> kleuren, int kleurIndex)
+        {
+            if (huidig == eind)
+                return Backtrack(grid, kleurParen, kleuren, kleurIndex + 1);
+
+            int[] buren = {
+        huidig - 5,
+        huidig + 5,
+        huidig % 5 > 0 ? huidig - 1 : -1,
+        huidig % 5 < 4 ? huidig + 1 : -1
+    };
+
+            foreach (int buur in buren)
+            {
+                if (buur < 0 || buur > 24) continue;
+                if (grid[buur] != -1 && buur != eind) continue; // bezet (en niet het eindpunt)
+
+                int oud = grid[buur];
+                grid[buur] = kleurArgb;
+
+                if (ZoekPad(grid, buur, eind, kleurArgb, kleurParen, kleuren, kleurIndex))
+                    return true;
+
+                grid[buur] = oud; // backtrack
+            }
+
+            return false;
         }
         private void CheckWin()
         {
