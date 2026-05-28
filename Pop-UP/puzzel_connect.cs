@@ -22,7 +22,7 @@ namespace Pop_UP
         private Color pbKleur;
         private List<PictureBox> pad = new List<PictureBox>();
 
-        public puzzel_connect(string naam, Label lbl)
+        public puzzel_connect(Label lbl, int moeilijkheidsgraad)
         {
             this.Size = new Size(266, 290);
             this.MouseUp += Grid_MouseUp;
@@ -35,7 +35,12 @@ namespace Pop_UP
             gekleurdeVakjes.Add(Color.Blue, rnd.Next(0, 25));
             gekleurdeVakjes.Add(Color.Yellow, rnd.Next(0, 25));*/
             //ff checken
-            Color[] kleuren = { Color.Red, Color.Blue, Color.Green, Color.Red, Color.Blue, Color.Green };
+            List<Color> kleuren = new List<Color>() { Color.Red, Color.Blue, Color.Green, Color.Red, Color.Blue, Color.Green };
+            if(moeilijkheidsgraad > 1)
+            {
+                kleuren.Add(Color.Yellow);
+                kleuren.Add(Color.Yellow);
+            }
             aantalKleuren = kleuren.Distinct().Count();
             List<int> gebruikteVakjes = new List<int>();
             // Vervang de huidige loop in de constructor door dit:
@@ -45,7 +50,7 @@ namespace Pop_UP
                 gekleurdeVakjes.Clear();
                 gebruikteVakjes.Clear();
 
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < kleuren.Count(); i++)
                 {
                     int randomVakje;
                     do { randomVakje = rnd.Next(0, 25); }
@@ -59,6 +64,10 @@ namespace Pop_UP
                 var roodVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Red).Select(k => k.Key).ToList();
                 var blauwVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Blue).Select(k => k.Key).ToList();
                 var groenVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Green).Select(k => k.Key).ToList();
+                if (moeilijkheidsgraad > 1)
+                {
+                    var geleVakjes = gekleurdeVakjes.Where(k => k.Value == Color.Yellow).Select(k => k.Key).ToList();
+                }
 
                 geldigBord = IsPuzzelOplosbaar(gekleurdeVakjes);
             }
@@ -133,7 +142,7 @@ namespace Pop_UP
                 foreach (PictureBox pb in allePaden[kleur])
                     if (pb.Tag == null) pb.BackColor = Color.LightGray;
                 allePaden.Remove(kleur);
-                verbonden[kleur] = false;
+                verbonden[kleur] = false; // HIER
             }
 
             // Start nieuw pad vanaf eindpunt
@@ -263,9 +272,14 @@ namespace Pop_UP
         }
         private void CheckWin()
         {
+            Console.WriteLine($"CheckWin: verbonden.Count={verbonden.Count}, aantalKleuren={aantalKleuren}");
+            foreach (var kv in verbonden)
+                Console.WriteLine($"  {kv.Key} -> {kv.Value}");
             if (verbonden.Count == aantalKleuren && verbonden.Values.All(v => v))
             {
                 MessageBox.Show("Gewonnen! 🎉");
+                Form1.puzzelstukjes++;
+                Form1.label_stukjes.Text = $"puzzelstukjes: {Form1.puzzelstukjes}";
                 Form1.totalMs += 1500;
                 this.Close();
             } 

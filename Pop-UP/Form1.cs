@@ -19,6 +19,11 @@ namespace Pop_UP
         public Label lbl_titel = new Label();
         Random rnd = new Random();
         bool game_started = false;
+        public static int puzzelstukjes = 0; //basicly de punten
+        public static Label label_stukjes = new Label();
+
+        //moeilijker maken door de tijd ofz? aantal puzzels opgelost
+
         public Form1()
         {
             InitializeComponent();
@@ -39,10 +44,15 @@ namespace Pop_UP
             btn_start.Size = new Size(200, 60);
             btn_start.Text = "start game";
 
+            label_stukjes.Location = new Point(pb_width / 2 - 40, pb_height / 2 + 30);
+            label_stukjes.Size = new Size(200, 60);
+            label_stukjes.Text = $"puzzelstukjes: {puzzelstukjes}";
+
             //alle controls add
             Controls.Add(pb_main);
             pb_main.Controls.Add(lbl_titel);
             pb_main.Controls.Add(btn_start);
+            pb_main.Controls.Add(label_stukjes);
 
             //kleine test  
             btn_start.Click += (sender, e) =>
@@ -50,9 +60,16 @@ namespace Pop_UP
                 game_started = true;
                 timer.Start();
                 int welke_puzzel = rnd.Next(0, 100);
-                if(welke_puzzel < 50)
+                int moeilijkheidsgraad = 1;
+                if(puzzelstukjes >= 5)
                 {
-                    puzzel_connect puzzel_connect = new puzzel_connect("testje", lbl_titel);
+                    moeilijkheidsgraad = 2;
+                }
+                if (welke_puzzel < 50)
+                    //hier moeilijkheid meegeven
+                    //mss ook nog een extra puzzel dan want download kan nie ecth moeilijker
+                {
+                    puzzel_connect puzzel_connect = new puzzel_connect(lbl_titel, moeilijkheidsgraad);
                     puzzel_connect.ShowDialog();
                 }
                 else

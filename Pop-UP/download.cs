@@ -33,6 +33,8 @@ namespace Pop_UP
                 {
                     timer.Stop();
                     MessageBox.Show("Gewonnen! 🎉");
+                    int puzzelstukken = Form1.puzzelstukjes++;
+                    Form1.label_stukjes.Text = $"puzzelstukjes: {puzzelstukken}";
                     Form1.totalMs += 1500;
                     this.Close();
                     return;
